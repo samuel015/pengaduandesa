@@ -112,7 +112,7 @@ try {
         <a href="logout.php">Keluar</a>
     </div>
     <div class="dashboard">
-        <div class="card" onclick="window.location.href='laporan.php'">
+        <div class="card" onclick="window.location.href='aduan.php'">
             <h3>Daftar Aduan</h3>
             <p><?php echo $jumlah_aduan; ?></p>
         </div>

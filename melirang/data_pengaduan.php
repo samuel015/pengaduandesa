@@ -167,26 +167,36 @@ if ($user_id) {
                 <tr>
                     <th>ID</th>
                     <th>NIK</th>
+                    <th>Nama</th>
+                    <th>jenis pengaduan</th>
                     <th>Isi Pengaduan</th>
                     <th>Status</th>
                     <th>Proses</th>
+                    <th>Bukti</th>
                 </tr>
             </thead>
             <tbody>
-                <?php
-                // Ambil data pengaduan dari database
-                $stmt = $pdo->query("SELECT * FROM pengaduan");
-                while ($row = $stmt->fetch()) {
-                    echo "<tr>
-                            <td>{$row['id']}</td>
-                            <td>{$row['nik']}</td>
-                            <td>{$row['isi_pengaduan']}</td>
-                            <td>{$row['status']}</td>
-                            <td>{$row['proses']}</td>
-                          </tr>";
+            <?php
+            $stmt = $pdo->query("SELECT * FROM pengaduan");
+            while ($row = $stmt->fetch()) {
+                echo "<tr>
+                        <td>{$row['id']}</td>
+                        <td>{$row['nik']}</td>
+                        <td>{$row['nama']}</td>
+                        <td>{$row['jenis_aduan']}</td>
+                        <td>{$row['isi_pengaduan']}</td>
+                        <td>{$row['status']}</td>
+                        <td>{$row['proses']}</td>
+                        <td>";
+                if ($row['evidence']) {
+                    echo "<a href='uploads/{$row['evidence']}'>Download</a>";
+                } else {
+                    echo "Tidak ada";
                 }
-                ?>
-            </tbody>
+                echo "</td></tr>";
+            }
+            ?>
+        </tbody>
         </table>
     </div>
 </body>

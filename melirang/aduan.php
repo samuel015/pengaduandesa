@@ -8,12 +8,13 @@ if (!isset($_SESSION['nik']) || $_SESSION['role'] !== 'admin') {
     exit();
 }
 
-// Ambil data aduan dari database
+// Ambil data tanggapan berdasarkan pengaduan
 try {
-    $stmt = $pdo->query("SELECT p.id, p.jenis_aduan, r.nama, r.nik, p.isi_pengaduan, p.status, p.evidence 
-                         FROM pengaduan p
-                         LEFT JOIN registrasi r ON p.nik = r.nik");
-    $data_pengaduan = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $stmtTanggapan = $pdo->query("SELECT t.*, p.jenis_aduan, r.nama AS nama_pelapor FROM tanggapan t LEFT JOIN pengaduan p ON t.id = p.id LEFT JOIN registrasi r ON p.nik = r.nik");
+    $tanggapan = $stmtTanggapan->fetchAll(PDO::FETCH_ASSOC);
+
+    $stmtPengaduan = $pdo->query("SELECT p.*, r.nama AS nama_pelapor FROM pengaduan p LEFT JOIN registrasi r ON p.nik = r.nik");
+    $pengaduan = $stmtPengaduan->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
     die("Kesalahan: " . htmlspecialchars($e->getMessage()));
 }
@@ -24,9 +25,8 @@ try {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daftar Aduan - Pengaduan</title>
+    <title>Pengaduan dan Tanggapan</title>
     <style>
-        /* CSS styles */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f4f4f4;
@@ -35,96 +35,92 @@ try {
             display: flex;
         }
         .sidebar {
-            width: 250px;
-            background-color: #35424a;
-            color: white;
+            width: 20%;
+            background: #35424a;
+            color: #ffffff;
             padding: 20px;
             height: 100vh;
-            position: fixed;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
         }
-        .sidebar h2 {
+        .sidebar h3 {
             color: #ffffff;
+            margin-top: 0;
         }
         .sidebar a {
             color: #ffffff;
             text-decoration: none;
             display: block;
-            padding: 10px 0;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+            transition: background 0.3s ease;
         }
         .sidebar a:hover {
-            background-color: #4a4a4a;
+            background: #444;
         }
-        .container {
-            margin-left: 270px; /* Space for sidebar */
-            width: calc(100% - 270px);
+        .content {
+            width: 80%;
             padding: 20px;
-            background: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-        h2 {
+        .content h3 {
+            font-size: 24px;
             color: #35424a;
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
+            margin-bottom: 20px;
         }
         th, td {
+            border: 1px solid #ddd;
             padding: 10px;
             text-align: left;
-            border-bottom: 1px solid #ddd;
         }
         th {
-            background-color: #35424a;
-            color: white;
+            background: #35424a;
+            color: #ffffff;
         }
-        tr:hover {
-            background-color: #f1f1f1;
+        textarea {
+            width: 100%;
+            height: 50px;
+            resize: none;
         }
     </style>
 </head>
 <body>
     <div class="sidebar">
-       <h3>Menu</h3>
+        <h3>Menu</h3>
         <a href="admin_dashboard.php">Dashboard</a>
         <a href="konfirmasi_user.php">Konfirmasi Warga</a>
-        <a href="halaman_konfirmasi_admin.php">kelola Admin</a>
+        <a href="halaman_konfirmasi_admin.php">Kelola Admin</a>
         <a href="laporan.php">Lihat Pengaduan</a>
         <a href="tambah_informasi.php">Tambah Agenda Desa</a>
         <a href="logout.php">Keluar</a>
     </div>
-    <div class="container">
-        <h2>Daftar Aduan</h2>
-        <table border="1" cellpadding="5" cellspacing="0">
+
+    <div class="content">
+        <h3>Daftar Pengaduan</h3>
+        <table>
             <tr>
                 <th>No.</th>
-                <th>NIK</th>
-                <th>Nama</th>
+                <th>Nama Pelapor</th>
                 <th>Jenis Aduan</th>
-                <th>Isi Pengaduan</th>
-                <th>Lampiran</th>
+                <th>Keterangan</th>
                 <th>Status</th>
             </tr>
-            <?php
-            $stmt = $pdo->prepare("SELECT * FROM pengaduan");
-            $stmt->execute();
-            $no = 1;
-            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                ?>
+            <?php $no = 1; ?>
+            <?php foreach ($pengaduan as $row) : ?>
                 <tr>
                     <td><?= $no++; ?></td>
-                    <td><?= $row['nik']; ?></td>
-                    <td><?= $row['nama']; ?></td>
-                    <td><?= $row['jenis_aduan']; ?></td>
-                    <td><?= $row['isi_pengaduan']; ?></td>
-                    <td><?= $row['evidence']; ?></td>
-                    <td><?= $row['proses']; ?></td>
+                    <td><?= htmlspecialchars($row['nama_pelapor']); ?></td>
+                    <td><?= htmlspecialchars($row['jenis_aduan']); ?></td>
+                    <td><?= htmlspecialchars($row['isi_pengaduan']); ?></td>
+                    <td><?= htmlspecialchars($row['status']); ?></td>
+                    
+                    </td>
                 </tr>
-                <?php
-            }
-            ?>
+            <?php endforeach; ?>
         </table>
-    </div>
+
 </body>
 </html>

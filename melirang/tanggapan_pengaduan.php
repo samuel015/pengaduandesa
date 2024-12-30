@@ -1,6 +1,6 @@
 <?php
 session_start();
-include 'db.php'; // File koneksi database
+include 'db.php'; // Koneksi database
 
 // Periksa apakah pengguna sudah login sebagai admin
 if (!isset($_SESSION['nik']) || $_SESSION['role'] !== 'admin') {
@@ -8,10 +8,12 @@ if (!isset($_SESSION['nik']) || $_SESSION['role'] !== 'admin') {
     exit();
 }
 
-// Ambil data tanggapan
+// Ambil semua pengaduan dari database
 try {
-    $stmt = $pdo->query("SELECT * FROM tanggapan");
-    $tanggapan = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $stmt = $pdo->query("SELECT p.id, r.nama AS nama_pelapor, p.jenis_aduan, p.isi_pengaduan, p.proses 
+                          FROM pengaduan p
+                          JOIN registrasi r ON p.nik = r.nik");
+    $pengaduan = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
     die("Kesalahan: " . htmlspecialchars($e->getMessage()));
 }
@@ -22,7 +24,7 @@ try {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tanggapan Aduan - Admin</title>
+    <title>Pengaduan - Admin</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -55,7 +57,7 @@ try {
         .sidebar a:hover {
             background: #444;
         }
-        .tanggapan-aduan {
+        .pengaduan {
             margin: 20px auto;
             width: 80%;
             padding: 20px;
@@ -63,23 +65,31 @@ try {
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-        .tanggapan-aduan h3 {
+        .pengaduan h3 {
             margin: 0;
             font-size: 24px;
             color: #35424a;
         }
-        .tanggapan-aduan table {
+        .pengaduan table {
             width: 100%;
             border-collapse: collapse;
         }
-        .tanggapan-aduan th, .tanggapan-aduan td {
+        .pengaduan th, .pengaduan td {
             border: 1px solid #ddd;
             padding: 10px;
             text-align: left;
         }
-        .tanggapan-aduan th {
+        .pengaduan th {
             background: #35424a;
             color: #ffffff;
+        }
+        .success {
+            color: green;
+            margin-bottom: 20px;
+        }
+        .error {
+            color: red;
+            margin-bottom: 20px;
         }
     </style>
 </head>
@@ -88,38 +98,41 @@ try {
         <h3>Menu</h3>
         <a href="admin_dashboard.php">Dashboard</a>
         <a href="konfirmasi_user.php">Konfirmasi Warga</a>
-        <a href="halaman_konfirmasi_admin.php">kelola Admin</a>
+        <a href="halaman_konfirmasi_admin.php">Kelola Admin</a>
         <a href="laporan.php">Lihat Pengaduan</a>
         <a href="tambah_informasi.php">Tambah Agenda Desa</a>
         <a href="logout.php">Keluar</a>
     </div>
 
-    <div class="tanggapan-aduan">
-        <h3>Daftar Tanggapan Aduan</h3>
+    <div class="pengaduan">
+        <h3>Daftar Pengaduan</h3>
+
+        <!-- Menampilkan pesan kesalahan -->
+        <?php if (isset($_GET['error'])): ?>
+            <div class="error"><?= htmlspecialchars($_GET['error']); ?></div>
+        <?php endif; ?>
+
         <table>
             <tr>
                 <th>No.</th>
                 <th>Nama Pelapor</th>
                 <th>Jenis Aduan</th>
-                <th>Keterangan</th>
+                <th>Isi Pengaduan</th>
                 <th>Status</th>
-                <th>Tanggapan</th>
                 <th>Aksi</th>
             </tr>
             <?php $no = 1; ?>
-            <?php foreach ($tanggapan as $row) : ?>
+            <? php foreach ($pengaduan as $row): ?>
                 <tr>
                     <td><?= $no++; ?></td>
                     <td><?= htmlspecialchars($row['nama_pelapor']); ?></td>
                     <td><?= htmlspecialchars($row['jenis_aduan']); ?></td>
-                    <td><?= htmlspecialchars($row['keterangan']); ?></td>
-                    <td><?= htmlspecialchars($row['status']); ?></td>
-                    <td>
-                        <textarea readonly><?= htmlspecialchars($row['tanggapan']); ?></textarea>
-                    </td>
+                    <td><?= htmlspecialchars($row['isi_pengaduan']); ?></td>
+                    <td><?= htmlspecialchars($row['proses']); ?></td>
                     <td>
                         <button onclick="proses(<?= $row['id']; ?>)">Proses</button>
                         <button onclick="tolak(<?= $row['id']; ?>)">Tolak</button>
+                        <button onclick="selesai(<?= $row['id']; ?>)">Selesai</button>
                     </td>
                 </tr>
             <?php endforeach; ?>
@@ -128,11 +141,17 @@ try {
 
     <script>
         function proses(id) {
-            window.location.href = "proses.php?id=" + id;
+            window.location.href = "proses_pengaduan.php?id=" + id;
         }
 
         function tolak(id) {
-            window.location.href = "reject_user.php?id=" + id;
+            window.location.href = "konfirmasi_reject.php?id=" + id;
+        }
+
+        function selesai(id) {
+            if (confirm("Apakah Anda yakin ingin menyelesaikan pengaduan ini?")) {
+                window.location.href = "proses_selesai.php?id=" + id;
+            }
         }
     </script>
 </body>

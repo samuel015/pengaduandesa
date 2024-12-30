@@ -10,15 +10,15 @@ if (!isset($_SESSION['nik']) || $_SESSION['role'] !== 'admin') {
 
 // Pastikan ada parameter ID
 if (!isset($_GET['id'])) {
-    die("Kesalahan: ID tidak ditemukan.");
+    die("Kesalahan: ID tidak ditemukan. Parameter GET: " . htmlspecialchars(print_r($_GET, true)));
 }
 
-$id_pengaduan = intval($_GET['id']);
+$id = intval($_GET['id']); // Mengubah nama variabel menjadi $id
 
 try {
     // Ambil email dan status pengaduan berdasarkan ID pengaduan
     $stmt = $pdo->prepare("SELECT r.email, p.proses FROM registrasi r JOIN pengaduan p ON r.nik = p.nik WHERE p.id = ?");
-    $stmt->execute([$id_pengaduan]);
+    $stmt->execute([$id]); // Menggunakan $id yang baru
     $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
     // Periksa apakah data ditemukan
@@ -33,9 +33,9 @@ try {
 
     // Periksa proses pengaduan
     if ($result['proses'] === 'Pending') {
-        // Update proses pengaduan menjadi "Tolak"
+        // Update proses pengaduan menjadi "Selesai"
         $updateStmt = $pdo->prepare("UPDATE pengaduan SET proses = ? WHERE id = ?");
-        $updateStmt->execute(['Tolak', $id_pengaduan]);
+        $updateStmt->execute(['Selesai', $id]); // Menggunakan $id yang baru
 
         if ($updateStmt->rowCount() === 0) {
             die("Kesalahan: Proses pengaduan tidak dapat diperbarui.");

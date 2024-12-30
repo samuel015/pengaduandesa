@@ -139,7 +139,7 @@ $result = $pdo->query($query);
                                         <button type="submit" class="btn-accept">Aktifkan</button>
                                     </form>
                                     <!-- Form untuk Tolak -->
-                                    <form method="POST" action="konfirmasi_reject.php" style="display:inline;">
+                                    <form method="POST" action="tolak_user.php" style="display:inline;">
                                         <input type="hidden" name="user_id" value="<?= $row['id']; ?>">
                                         <button type="submit" class="btn-reject">Tolak</button>
                                     </form>

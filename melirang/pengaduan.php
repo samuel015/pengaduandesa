@@ -12,7 +12,7 @@ if (!isset($_SESSION['nik'])) {
 $nik = $_SESSION['nik'];
 
 // Ambil nama pengguna dari database berdasarkan NIK
-$stmt = $pdo->prepare("SELECT nama FROM register WHERE nik = :nik");
+$stmt = $pdo->prepare("SELECT nama FROM registrasi WHERE nik = :nik"); // Pastikan tabel yang benar
 $stmt->execute(['nik' => $nik]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
 $nama = $user ? $user['nama'] : '';
@@ -85,7 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         body {
             font-family: Arial, sans-serif;
-            background-color: #f7f9fc;
+            background-color: #f7f9fc ;
             color: #333;
             line-height: 1.6;
             display: flex;
@@ -116,7 +116,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         .content {
             flex: 1;
-            padding: 20 px;
+            padding: 20px;
         }
         .form-group {
             margin-bottom: 15px;
@@ -155,6 +155,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="sidebar">
         <h2>Menu</h2>
         <a href="pengaduan.php">Kirim Pengaduan</a>
+        <a href="riwayat_pengaduan.php">Riwayat Pengaduan</a>
         <a href="logout.php">Logout</a>
     </div>
     <div class="content">
