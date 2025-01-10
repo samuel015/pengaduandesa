@@ -7,32 +7,26 @@ include 'db.php';
 <head>
     <meta charset="UTF-8">
     <title>Tambah Informasi Agenda</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f4f4f4;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 0;
-        }
-        .container {
             display: flex;
-            width: 100%;
-            margin: auto;
-            overflow: hidden;
-        }
-        header {
-            background: #35424a;
-            color: #ffffff;
-            padding: 20px 0;
-            text-align: center;
-            width: 100%;
+            height: 100vh; /* Pastikan body memiliki tinggi penuh */
         }
         .sidebar {
-            width: 20%;
+            height: 100vh;
+            width: 250px;
             background: #35424a;
             padding: 20px;
-            height: 100vh;
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            position: fixed;
+        }
+        .sidebar h3 {
+            color: #ffffff;
+            margin-top: 0;
         }
         .sidebar a {
             color: #ffffff;
@@ -42,13 +36,14 @@ include 'db.php';
             padding: 10px;
             border-radius: 4px;
             transition: background 0.3s ease;
-}
+        }
         .sidebar a:hover {
             background: #444;
         }
         .content {
-            width: 80%;
+            margin-left: 270px; /* Space for sidebar */
             padding: 20px;
+            flex: 1; /* Mengambil sisa ruang yang tersedia */
         }
         .form-container {
             margin-left: 20px; /* Memberi jarak dari sidebar */
@@ -85,15 +80,18 @@ include 'db.php';
 </head>
 <body>
 
-    <div class="container">
-        <div class="sidebar">
-            <a href="admin_dashboard.php">Dashboard</a>
-            <a href="konfirmasi_user.php">Konfirmasi Warga</a>
-            <a href="tambah_admin.php">kelola Admin</a>
-            <a href="laporan.php">Lihat Pengaduan</a>
-            <a href="tambah_informasi.php">Tambah Agenda Desa</a>
-            <a href="logout.php">keluar</a>
-        </div>
+    <div class="sidebar">
+        <h3>Menu</h3>
+        <a href="admin_dashboard.php"><i class="fas fa-tachometer-alt"></i>Dashboard</a>
+        <a href="konfirmasi_user.php"><i class="fas fa-user-check"></i>Konfirmasi Warga</a>
+        <a href="tambah_admin.php"><i class="fas fa-user-plus"></i>Kelola Admin</a>
+        <a href="laporan.php"><i class="fas fa-file-alt"></i>Laporan Pengaduan</a>
+        <a href="tambah_informasi.php"><i class="fas fa-calendar-plus"></i>Tambah Agenda Desa</a>
+        <a href="logout.php"><i class="fas fa-sign-out-alt"></i>Keluar</a>
+    </div>
+
+
+    <div class="content">
         <div class="form-container">
             <h2>Tambah Informasi Agenda</h2>
             <form action="proses_tambah_agenda.php" method="POST">

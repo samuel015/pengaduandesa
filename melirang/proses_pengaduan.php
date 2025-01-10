@@ -30,7 +30,7 @@ try {
     if ($result['proses'] === 'Pending') {
         // Update proses pengaduan menjadi "diterima"
         $updateStmt = $pdo->prepare("UPDATE pengaduan SET proses = ? WHERE id = ?");
-        $updateStmt->execute(['diterima', $id_pengaduan]);
+        $updateStmt->execute(['Diterima', $id_pengaduan]);
 
         if ($updateStmt->rowCount() === 0) {
             die("Kesalahan: Proses pengaduan tidak dapat diperbarui.");

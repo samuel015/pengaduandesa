@@ -15,7 +15,7 @@ if (isset($_POST['submit'])) {
     $nama = $_POST['nama'];
     $password = $_POST['password'];
     $jabatan = $_POST['jabatan'];
-    $role = $_POST['role'];
+    $role = 'petugas'; // Set role menjadi 'petugas'
     $alamat = $_POST['alamat']; // Ambil alamat dari input
     $email = $_POST['email']; // Ambil email dari input
 
@@ -64,15 +64,15 @@ if (isset($_POST['submit'])) {
                         ':nama' => $nama, 
                         ':password' => $hashed_password, 
                         ':jabatan' => $jabatan, 
-                        ':role' => $role,
+                        ':role' => $role, // Menyimpan role sebagai petugas
                         ':foto' => $uniqueProfilePicName,
                         ':foto_ktp' => $uniqueKtpPicName, // Menyimpan foto KTP
                         ':alamat' => $alamat, // Menyimpan alamat
-                        ':email' => $email // Meny impan email
+                        ':email' => $email // Menyimpan email
                     ]);
 
                     // Redirect ke halaman aktifkan_admin.php
-                    header("Location: aktifkan_admin.php?message=Admin berhasil ditambahkan, status Pending.");
+                    header("Location: aktifkan_admin.php?message=Petugas berhasil ditambahkan, status Pending.");
                     exit();
                 } catch (PDOException $e) {
                     $error_message = "Error: " . $e->getMessage();
@@ -89,24 +89,24 @@ if (isset($_POST['submit'])) {
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tambah Admin</title>
+    <meta name ="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tambah Petugas</title>
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f4f4f4;
+            font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
             display: flex;
             height: 100vh; /* Pastikan body memiliki tinggi penuh */
         }
         .sidebar {
-            width: 20%;
+            height: 100vh;
+            width: 250px;
             background: #35424a;
-            color: #ffffff;
             padding: 20px;
-            height: 100%; /* Pastikan sidebar memiliki tinggi penuh */
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            position: fixed;
         }
         .sidebar h3 {
             color: #ffffff;
@@ -124,12 +124,21 @@ if (isset($_POST['submit'])) {
         .sidebar a:hover {
             background: #444;
         }
-        .container {
-            width: 80%;
+        .content {
+            margin-left: 270px; /* Space for sidebar */
             padding: 20px;
+            flex: 1; /* Mengambil sisa ruang yang tersedia */
             display: flex;
-            flex-direction: column; /* Mengatur agar konten ditampilkan secara vertikal */
-            align-items: flex-start; /* Mengatur agar form tidak terpusat */
+            justify-content: center; /* Memusatkan konten secara horizontal */
+            align-items: center; /* Memusatkan konten secara vertikal */
+        }
+        .container {
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 100%; /* Memastikan kontainer mengambil lebar penuh */
+            max-width: 400px; /* Membatasi lebar maksimum kontainer */
         }
         h1 {
             text-align: left; /* Mengubah teks judul menjadi rata kiri */
@@ -170,54 +179,57 @@ if (isset($_POST['submit'])) {
 </head>
 <body>
     <div class="sidebar">
+        <div class="sidebar">
         <h3>Menu</h3>
-        <a href="admin_dashboard.php">Dashboard</a>
-        <a href="konfirmasi_user.php">Konfirmasi Warga</a>
-        <a href="tambah_admin.php">Kelola Admin</a>
-        <a href="laporan.php">Lihat Pengaduan</a>
-        <a href="tambah_informasi.php">Tambah Agenda Desa</a>
-        <a href="daftar_petugas.php">Daftar Petugas</a> <!-- Tautan baru untuk daftar petugas -->
-        <a href="logout.php">Keluar</a>
+        <a href="admin_dashboard.php"><i class="fas fa-tachometer-alt"></i>Dashboard</a>
+        <a href="konfirmasi_user.php"><i class="fas fa-user-check"></i>Konfirmasi Warga</a>
+        <a href="tambah_admin.php"><i class="fas fa-user-plus"></i>Kelola Admin</a>
+        <a href="laporan.php"><i class="fas fa-file-alt"></i>Laporan Pengaduan</a>
+        <a href="tambah_informasi.php"><i class="fas fa-calendar-plus"></i>Tambah Agenda Desa</a>
+        <a href="logout.php"><i class="fas fa-sign-out-alt"></i>Keluar</a>
     </div>
-    <div class="container">
-        <h1>Tambah Admin</h1>
+    </div>
+    <div class="content">
+        <div class="container">
+            <h1>Tambah Petugas</h1>
 
-        <?php if (isset($error_message)): ?>
-            <div class="error"><?= $error_message; ?></div>
-        <?php endif; ?>
+            <?php if (isset($error_message)): ?>
+                <div class="error"><?= $error_message; ?></div>
+            <?php endif; ?>
 
-        <form action="tambah_admin.php" method="POST" enctype="multipart/form-data">
-            <label for="nik">NIK:</label>
-            <input type="text" name="nik" placeholder="Masukkan NIK (16 digit)" required>
+            <form action="tambah_admin.php" method="POST" enctype="multipart/form-data">
+                <label for="nik">NIK:</label>
+                <input type="text" name="nik" placeholder="Masukkan NIK (16 digit)" required>
 
-            <label for="nama">Nama:</label> 
-            <input type="text" name="nama" placeholder="Masukkan Nama Lengkap" required>
+                <label for="nama">Nama:</label> 
+                <input type="text" name="nama" placeholder="Masukkan Nama Lengkap" required>
 
-            <label for="password">Password:</label>
-            <input type="password" name="password" placeholder="Masukkan Password" required >
+                <label for="password">Password:</label>
+                <input type="password" name="password" placeholder="Masukkan Password" required>
 
-            <label for="jabatan">Jabatan:</label>
-            <input type="text" name="jabatan" placeholder="Masukkan Jabatan" required>
+                <label for="jabatan">Jabatan:</label>
+                <input type="text" name="jabatan" placeholder="Masukkan Jabatan" required>
 
-            <label for="role">Role:</label>
-            <select name="role" required>
-                <option value="admin">Admin</option>
-            </select>
+                <label for=" role">Role:</label>
+                <select name="role" required>
+                    <option value="petugas" selected>Petugas</option>
+                </select>
 
-            <label for="alamat">Alamat:</label>
-            <input type="text" name="alamat" placeholder="Masukkan Alamat" required>
+                <label for="alamat">Alamat:</label>
+                <input type="text" name="alamat" placeholder="Masukkan Alamat" required>
 
-            <label for="email">Email:</label>
-            <input type="email" name="email" placeholder="Masukkan Email" required>
+                <label for="email">Email:</label>
+                <input type="email" name="email" placeholder="Masukkan Email" required>
 
-            <label for="profile_pic">Foto Profil:</label>
-            <input type="file" name="profile_pic" accept="image/*" required>
+                <label for="profile_pic">Foto Profil:</label>
+                <input type="file" name="profile_pic" accept="image/*" required>
 
-            <label for="foto_ktp">Foto KTP:</label>
-            <input type="file" name="foto_ktp" accept="image/*" required>
+                <label for="foto_ktp">Foto KTP:</label>
+                <input type="file" name="foto_ktp" accept="image/*" required>
 
-            <button type="submit" name="submit">Tambah Admin</button>
-        </form>
+                <button type="submit" name="submit">Tambah Petugas</button>
+            </form>
+        </div>
     </div>
 </body>
 </html>

@@ -41,29 +41,13 @@ try {
             die("Kesalahan: Proses pengaduan tidak dapat diperbarui.");
         }
 
-        // Alamat email desa
-        $email_desa = "desa.melirang@gmail.com"; // Ganti dengan email desa yang sesuai
-        $gmail_url = "https://mail.google.com/mail/?view=cm&fs=1" . 
-                     "&to=" . urlencode($email) . 
-                     "&from=" . urlencode($email_desa) . 
-                     "&su=" . urlencode("Penolakan Pengaduan") . 
-                     "&body=" . urlencode("Pengaduan Anda telah ditolak oleh pihak desa. Silakan hubungi pihak desa untuk informasi lebih lanjut.");
+        // Kirim notifikasi penolakan (misalnya, simpan ke log atau kirim email)
+        // Anda bisa menambahkan logika di sini untuk mengirim email atau menyimpan ke database
+        echo "Pengaduan Anda telah ditolak. Silakan hubungi pihak desa untuk informasi lebih lanjut.";
         
-        // Redirect ke URL Gmail
-        header("Location: " . $gmail_url);
-        exit();
     } else {
-        // Jika pengaduan sudah diproses, arahkan ke Gmail tanpa mengupdate status
-        $email_desa = "desa.melirang@gmail.com"; // Ganti dengan email desa yang sesuai
-        $gmail_url = "https://mail.google.com/mail/?view=cm&fs=1" . 
-                     "&to=" . urlencode($email) . 
-                     "&from=" . urlencode($email_desa) . 
-                     "&su=" . urlencode("Penolakan Pengaduan") . 
-                     "&body=" . urlencode("Pengaduan Anda telah ditolak oleh pihak desa. Silakan hubungi pihak desa untuk informasi lebih lanjut.");
-        
-        // Redirect ke URL Gmail
-        header("Location: " . $gmail_url);
-        exit();
+        // Jika pengaduan sudah diproses
+        echo "Pengaduan Anda sudah diproses sebelumnya.";
     }
 
 } catch (PDOException $e) {

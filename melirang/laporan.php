@@ -49,35 +49,28 @@ function calculateDuration($start, $end) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Laporan Pengaduan</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         /* Style dasar */
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f4f4f4;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 0;
-        }
-        .container {
             display: flex;
-            width: 100%;
-            margin: auto;
-            overflow: hidden;
-        }
-        header {
-            background: #35424a;
-            color: #ffffff;
-            padding: 20px 0;
-            text-align: center;
-            width: 100%;
+            height: 100vh; /* Pastikan body memiliki tinggi penuh */
         }
         .sidebar {
-            width: 20%;
-            background: #35424a;
-            color: #ffffff;
-            padding: 20px;
             height: 100vh;
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            width: 250px;
+            background: #35424a;
+            padding: 20px;
+            position: fixed;
+        }
+        .sidebar h3 {
+            color: #ffffff;
+            margin-top: 0;
         }
         .sidebar a {
             color: #ffffff;
@@ -92,10 +85,20 @@ function calculateDuration($start, $end) {
             background: #444;
         }
         .content {
-            width: 80%;
+            margin-left: 270px; /* Space for sidebar */
             padding: 20px;
+            flex: 1; /* Mengambil sisa ruang yang tersedia */
             display: flex;
             flex-direction: column;
+        }
+        h1 {
+            text-align: left; /* Mengubah teks judul menjadi rata kiri */
+            margin-bottom: 20px;
+        }
+        .error {
+            color: red;
+            text-align: left; /* Mengubah teks error menjadi rata kiri */
+            margin-bottom: 20px;
         }
         .table-container {
             flex: 1;
@@ -143,7 +146,7 @@ function calculateDuration($start, $end) {
             doc.text("Laporan Pengaduan", 14, 16);
             doc.autoTable({ 
                 head: [['ID', 'NIK', 'Status', 'Proses']], 
-                body: <?php echo json_encode (array_map(function($item) {
+                body: <?php echo json_encode(array_map(function($item) {
                     return [$item['id'], $item['nik'], $item['status'], $item['proses']];
                 }, $pengaduan)); ?> 
             });
@@ -152,20 +155,19 @@ function calculateDuration($start, $end) {
     </script>
 </head>
 <body>
-    <header>
-        <h1>Laporan Pengaduan</h1>
-    </header>
+   
     
     <div class="container">
         <div class="sidebar">
-            <h2>Menu</h2>
-            <a href="admin_dashboard.php">Dashboard</a>
-            <a href="konfirmasi_user.php">Konfirmasi Warga</a>
-            <a href="tambah_admin.php">Tambah Admin</a>
-            <a href="laporan.php">Lihat Pengaduan</a>
-            <a href="tambah_informasi.php">Tambah Agenda Desa</a>
-            <a href="logout.php">Keluar</a>
-        </div>
+        <h3>Menu</h3>
+        <a href="admin_dashboard.php"><i class="fas fa-tachometer-alt"></i>Dashboard</a>
+        <a href="konfirmasi_user.php"><i class="fas fa-user-check"></i>Konfirmasi Warga</a>
+        <a href="tambah_admin.php"><i class="fas fa-user-plus"></i>Kelola Admin</a>
+        <a href="laporan.php"><i class="fas fa-file-alt"></i>Laporan Pengaduan</a>
+        <a href="tambah_informasi.php"><i class="fas fa-calendar-plus"></i>Tambah Agenda Desa</a>
+        <a href="logout.php"><i class="fas fa-sign-out-alt"></i>Keluar</a>
+    </div>
+
         <div class="content">
             <h2>Total Pengaduan: <?php echo $total_pengaduan; ?></h2>
             <div class="table-container">

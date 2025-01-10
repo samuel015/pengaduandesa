@@ -36,30 +36,32 @@ try {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Admin - Pengaduan</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f4f4f4;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 0;
-            display: flex;
         }
         .sidebar {
-            width: 20%;
-            background: #35424a;
-            color: #ffffff;
-            padding: 20px;
             height: 100vh;
+            width: 250px;
+            background: #35424a;
+            padding: 20px;
+            position: fixed;
             box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
         }
         .sidebar h3 {
             color: #ffffff;
             margin-top: 0;
+            font-size: 1.5rem;
         }
         .sidebar a {
             color: #ffffff;
             text-decoration: none;
-            display: block;
+            display: flex;
+            align-items: center;
             margin: 10px 0;
             padding: 10px;
             border-radius: 4px;
@@ -68,65 +70,86 @@ try {
         .sidebar a:hover {
             background: #444;
         }
-        .dashboard {
-            width: 80%;
+        .sidebar a i {
+            margin-right: 10px;
+        }
+        .content {
+            margin-left: 270px; /* Space for sidebar */
             padding: 20px;
+        }
+        .row {
             display: flex;
             flex-wrap: wrap;
-            justify-content: space-between;
+            margin: -10px; /* Adjust for spacing */
         }
-        .card {
+        .col {
+            flex: 1;
+            min-width: 220px; /* Minimum width for responsiveness */
+            margin: 10px;
             background: #ffffff;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
+            border-radius: 10px;
             padding: 20px;
-            text-align: center;
-            width: 23%; /* Adjust to fit four cards in a row */
-            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
         }
-        .card:hover {
+        .col:hover {
             transform: translateY(-5px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
         }
-        .card h3 {
-            margin: 0 0 10px;
+        .col h ```php
+        .col h3 {
             color: #35424a;
+            margin: 0 0 10px;
+            font-size: 1.2rem;
         }
-        .card p {
+        .col p {
+            font-size: 2.5rem; /* Ukuran font besar */
+            color: #35424a;
             margin: 0;
-            font-size: 24px;
-            font-weight: bold;
+        }
+        .icon {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 2rem;
+            color: #35424a;
         }
     </style>
 </head>
 <body>
     <div class="sidebar">
         <h3>Menu</h3>
-        <a href="admin_dashboard.php">Dashboard</a>
-        <a href="konfirmasi_user.php">Konfirmasi Warga</a>
-        <a href="tambah_admin.php">Kelola Admin</a>
-        <a href="laporan.php">Lihat Pengaduan</a>
-        <a href="tambah_informasi.php">Tambah Agenda Desa</a>
-        <a href="logout.php">Keluar</a>
+        <a href="admin_dashboard.php"><i class="fas fa-tachometer-alt"></i>Dashboard</a>
+        <a href="konfirmasi_user.php"><i class="fas fa-user-check"></i>Konfirmasi Warga</a>
+        <a href="tambah_admin.php"><i class="fas fa-user-plus"></i>Kelola Admin</a>
+        <a href="laporan.php"><i class="fas fa-file-alt"></i>Laporan Pengaduan</a>
+        <a href="tambah_informasi.php"><i class="fas fa-calendar-plus"></i>Tambah Agenda Desa</a>
+        <a href="logout.php"><i class="fas fa-sign-out-alt"></i>Keluar</a>
     </div>
-    <div class="dashboard">
-        <div class="card" onclick="window.location.href='aduan.php'">
-            <h3>Daftar Aduan</h3>
-            <p><?php echo $jumlah_aduan; ?></p>
-        </div>
-        <div class="card" onclick="window.location.href='tanggapan_pengaduan.php'">
-            <h3>Tanggapan Pengaduan</h3>
-            <p><?php echo $jumlah_tanggapan; ?></p>
-        </div>
-        <div class="card" onclick="window.location.href='daftar_petugas.php'">
-            <h3>Petugas</h3>
-            <p><?php echo $jumlah_petugas; ?></p>
-        </div>
-        <div class="card" onclick="window.location.href='daftar_pengguna.php'">
-            <h3>Pengguna</h3>
-            <p><?php echo $jumlah_pengguna; ?></p>
+    <div class="content">
+        <div class="row">
+            <div class="col" onclick="window.location.href='aduan.php'">
+                <h3>Daftar Aduan</h3>
+                <p><?php echo $jumlah_aduan; ?></p>
+                <i class="fas fa-comments icon"></i>
+            </div>
+            <div class="col" onclick="window.location.href='tanggapan_pengaduan.php'">
+                <h3>Jumlah Tanggapan</h3>
+                <p><?php echo $jumlah_tanggapan; ?></p>
+                <i class="fas fa-reply icon"></i>
+            </div>
+            <div class="col" onclick="window.location.href='petugas.php'">
+                <h3>Jumlah Petugas</h3>
+                <p><?php echo $jumlah_petugas; ?></p>
+                <i class="fas fa-user-shield icon"></i>
+            </div>
+            <div class="col" onclick="window.location.href='pengguna.php'">
+                <h3>Jumlah Pengguna</h3>
+                <p><?php echo $jumlah_pengguna; ?></p>
+                <i class="fas fa-users icon"></i>
+            </div>
         </div>
     </div>
 </body>

@@ -12,7 +12,7 @@ if (!isset($_SESSION['nik'])) {
 $nik = $_SESSION['nik'];
 
 // Ambil nama pengguna dari database berdasarkan NIK
-$stmt = $pdo->prepare("SELECT nama FROM register WHERE nik = :nik");
+$stmt = $pdo->prepare("SELECT nama FROM registrasi WHERE nik = :nik"); // Pastikan tabel yang benar
 $stmt->execute(['nik' => $nik]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
 $nama = $user ? $user['nama'] : '';
@@ -83,7 +83,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             padding: 0;
             box-sizing: border-box;
         }
-
         body {
             font-family: Arial, sans-serif;
             background-color: #f7f9fc;
@@ -91,7 +90,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             line-height: 1.6;
             display: flex;
         }
-
         .sidebar {
             width: 250px;
             background-color: #2c3e50;
@@ -99,13 +97,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             height: 100vh;
             padding: 20px;
         }
-
         .sidebar h2 {
             color: #ecdbff;
             text-align: center;
             margin-bottom: 20px;
         }
-
         .sidebar a {
             color: #ecf0f1;
             text-decoration: none;
@@ -115,31 +111,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             border-radius: 5px;
             transition: background 0.3s;
         }
-
+        .sidebar ```php
         .sidebar a:hover {
             background-color: #34495e;
         }
-
         .content {
             flex: 1;
-            padding: 20px }
-
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        .form-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
         .form-group {
             margin-bottom: 15px;
+            flex: 1;
         }
-
         .form-group label {
             display: block;
             margin-bottom: 5px;
         }
-
         .form-group input, .form-group textarea, .form-group select {
             width: 100%;
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 5px;
         }
-
         .form-group button {
             background-color: #3498db;
             color: white;
@@ -148,77 +148,78 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             border-radius: 5px;
             cursor: pointer;
         }
-
         .form-group button:hover {
             background-color: #2980b9;
         }
-
+        .add-button {
+            margin-left: 20px;
+            background-color: #2ecc71;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-size: 16px;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        .add-button:hover {
+            background-color: #27ae60;
+            transform: scale(1.05);
+        }
         .message {
             margin: 20px 0;
             color: green;
         }
-
         .error {
             color: red;
-        }
-
-        .add-button {
-            float: right;
-            margin-bottom: 20px;
-            background-color: #2ecc71;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .add-button:hover {
-            background-color: #27ae60;
         }
     </style>
 </head>
 <body>
     <div class="sidebar">
         <h2>Menu</h2>
-        <a href="pengaduan.php">Kirim Pengaduan</a>
+        <a href="kirim_pengaduan.php">Kirim Pengaduan</a>
+        <a href="riwayat_pengaduan.php">Riwayat Pengaduan</a>
         <a href="logout.php">Logout</a>
     </div>
     <div class="content">
         <h1>Kirim Pengaduan</h1>
-        <a href="tambah_pengaduan.php" class="add-button">Tambah Pengaduan</a>
+        <div class="form-container">
+            <div class="form-group">
+                <form action="kirim_pengaduan.php" method="POST" enctype="multipart/form-data">
+                    <label for="nik">NIK:</label>
+                    <input type="text" name="nik" value="<?= htmlspecialchars($nik); ?>" readonly required>
+
+                    <label for="nama">Nama:</label>
+                    <input type="text" name="nama" value="<?= htmlspecialchars($nama); ?>" readonly required>
+
+                    <label for="jenis_aduan">Jenis Aduan:</label>
+                    <select name="jenis_aduan" required>
+                        <option value="Infrastruktur">Infrastruktur</option>
+                        <option value="Kebersihan">Kebersihan</option>
+                        <option value="Keamanan">Keamanan</option>
+                    </select>
+
+                    <label for="isi_pengaduan">Isi Pengaduan:</label>
+                    <textarea name="isi_pengaduan" placeholder="Tuliskan pengaduan Anda di sini..." required></textarea>
+
+                    <label for="evidence">Lampiran (bukti pengaduan):</label>
+                    <input type="file" name="evidence" accept=".jpg,.gif,.png,.pdf,.doc,.docx">
+
+                    <div class="form-group">
+                        <button type="submit">Kirim Pengaduan</button>
+                    </div>
+                </form>
+            </div>
+            <a href="tambah_pengaduan.php">
+                <button class="add-button">Tambah Pengaduan</button>
+            </a>
+        </div>
         <?php if (!empty($message)): ?>
             <div class="message"><?php echo $message; ?></div>
         <?php endif; ?>
         <?php if (!empty($error_message)): ?>
             <div class="error"><?php echo $error_message; ?></div>
         <?php endif; ?>
-        <div class="form-group">
-            <form action="kirim_pengaduan.php" method="POST" enctype="multipart/form-data">
-                <label for="nik">NIK:</label>
-                <input type="text" name="nik" value="<?= htmlspecialchars($nik); ?>" readonly required>
-
-                <label for="nama">Nama:</label>
-                <input type="text" name="nama" value="<?= htmlspecialchars($nama); ?>" readonly required>
-
-                <label for="jenis_aduan">Jenis Aduan:</label>
-                <select name="jenis_aduan" required>
-                    <option value="Infrastruktur">Infrastruktur</option>
-                    <option value="Kebersihan">Kebersihan</option>
-                    <option value="Keamanan">Keamanan</option>
-                </select>
-
-                <label for="isi_pengaduan">Isi Pengaduan:</label>
-                <textarea name="isi_pengaduan" placeholder="Tuliskan pengaduan Anda di sini..." required></textarea>
-
-                <label for="evidence">Lampiran (bukti pengaduan):</label>
-                <input type="file" name="evidence" accept=".jpg,.gif,.png,.pdf,.doc,.docx">
-
-                <div class="form-group">
-                    <button type="submit">Kirim Pengaduan</button>
-                </div>
-            </form>
-        </div>
     </div>
 </body>
 </html>

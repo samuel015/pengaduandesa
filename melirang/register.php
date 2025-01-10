@@ -14,6 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $jabatan = isset($_POST['jabatan']) ? trim($_POST['jabatan']) : '';
     $foto_ktp = '';
     $foto_profil = '';
+    $foto_kk = '';
 
     // Validasi input
     if (strlen($nik) !== 16) {
@@ -52,7 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
 
             // Validasi dan proses upload foto profil
-            if (isset($_FILES['foto_profil']) && $_FILES['foto_profil']['error'] == 0) {
+            if (empty($error) && isset($_FILES['foto_profil']) && $_FILES['foto_profil']['error'] == 0) {
                 $allowed_ext = ['jpg', 'jpeg', 'png'];
                 $file_ext = pathinfo($_FILES['foto_profil']['name'], PATHINFO_EXTENSION);
                 $file_size = $_FILES['foto_profil']['size'];
@@ -69,24 +70,43 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $error = "Foto profil harus diunggah.";
             }
 
+            // Validasi dan proses upload foto KK
+            if (empty($error) && isset($_FILES['foto_kk']) && $_FILES['foto_kk']['error'] == 0) {
+                $allowed_ext = ['jpg', 'jpeg', 'png'];
+                $file_ext = pathinfo($_FILES['foto_kk']['name'], PATHINFO_EXTENSION);
+                $file_size = $_FILES['foto_kk']['size'];
+
+                if (!in_array(strtolower($file_ext), $allowed_ext)) {
+                    $error = "Format foto KK tidak valid. Harap unggah file dengan ekstensi .jpg, .jpeg, atau .png.";
+                } elseif ($file_size > 2000000) {
+                    $error = "Ukuran foto KK terlalu besar. Maksimal 2MB.";
+                } else {
+                    $foto_kk = 'uploads/kk/' . uniqid() . '.' . $file_ext;
+                    move_uploaded_file($_FILES['foto_kk']['tmp_name'], $foto_kk);
+                }
+            } else {
+                $error = "Foto KK harus diunggah.";
+            }
+
             if (empty($error)) {
                 // Hash password
                 $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
                 // Insert data ke database dengan status 'Pending'
                 try {
-                    $stmt = $pdo->prepare("INSERT INTO registrasi (nama, nik, password, role, alamat, email, jabatan, foto_ktp, foto, status) 
-                                           VALUES (:nama, :nik, :password, :role, :alamat, :email, :jabatan, :foto_ktp, :foto, 'Pending')");
+                    $stmt = $pdo->prepare("INSERT INTO registrasi (nama, nik, password, role, alamat, email, jabatan, foto_ktp, foto, status, foto_kk) 
+                                           VALUES (:nama, :nik, :password, :role, :alamat, :email, :jabatan, :foto_ktp, :foto, 'Pending', :foto_kk)");
                     $stmt->execute([
                         'nama' => $nama,
                         'nik' => $nik,
                         'password' => $hashed_password,
- 'role' => $role,
+                        'role' => $role,
                         'alamat' => $alamat,
                         'email' => $email,
                         'jabatan' => $jabatan,
                         'foto_ktp' => $foto_ktp,
-                        'foto' => $foto_profil
+                        'foto' => $foto_profil,
+                        'foto_kk' => $foto_kk
                     ]);
 
                     $_SESSION['nik'] = $nik;
@@ -136,7 +156,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <input type="text" name="nik" id="nik" required>
 
             <label for="password">Password:</label>
-            <input type="password" name="password" id="password" required>
+            <input type="password" name="password" id ="password" required>
 
             <label for="email">Email:</label>
             <input type="email" name="email" id="email" required>
@@ -149,6 +169,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             <label for="foto_profil">Foto Profil:</label>
             <input type="file" name="foto_profil" id="foto_profil" accept="image/*" required>
+
+            <label for="foto_kk">Foto KK:</label>
+            <input type="file" name="foto_kk" id="foto_kk" accept="image/*" required>
 
             <input type="submit" value="Daftar">
         </form>

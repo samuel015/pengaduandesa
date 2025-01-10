@@ -10,7 +10,7 @@ if (!isset($_SESSION['nik']) || $_SESSION['role'] !== 'admin') {
 
 // Ambil semua pengaduan dari database
 try {
-    $stmt = $pdo->query("SELECT p.id, r.nama AS nama_pelapor, p.jenis_aduan, p.isi_pengaduan, p.proses 
+    $stmt = $pdo->query("SELECT p.id, r.nama AS nama_pelapor, p.jenis_aduan, p.isi_pengaduan, p.proses, p.tanggapan_pengaduan 
                           FROM pengaduan p
                           JOIN registrasi r ON p.nik = r.nik");
     $pengaduan = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -91,6 +91,10 @@ try {
             color: red;
             margin-bottom: 20px;
         }
+        .tanggapan-form {
+            display: none; /* Sembunyikan form tanggapan secara default */
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -118,21 +122,34 @@ try {
                 <th>Nama Pelapor</th>
                 <th>Jenis Aduan</th>
                 <th>Isi Pengaduan</th>
+                <th>Tanggapan Pengaduan</th>
                 <th>Status</th>
                 <th>Aksi</th>
             </tr>
             <?php $no = 1; ?>
-            <? php foreach ($pengaduan as $row): ?>
+            <?php foreach ($pengaduan as $row): ?>
                 <tr>
                     <td><?= $no++; ?></td>
                     <td><?= htmlspecialchars($row['nama_pelapor']); ?></td>
                     <td><?= htmlspecialchars($row['jenis_aduan']); ?></td>
                     <td><?= htmlspecialchars($row['isi_pengaduan']); ?></td>
+                    <td><?= htmlspecialchars($row['tanggapan_pengaduan']); ?></td>
                     <td><?= htmlspecialchars($row['proses']); ?></td>
                     <td>
+                        <button onclick="confirmDiterima(<?= $row['id']; ?>)">Diterima</button>
                         <button onclick="proses(<?= $row['id']; ?>)">Proses</button>
-                        <button onclick="tolak(<?= $row['id']; ?>)">Tolak</button>
-                        <button onclick="selesai(<?= $row['id']; ?>)">Selesai</button>
+                        <button onclick="confirmTolak(<?= $row['id']; ?>)">Tolak</button>
+                        <button onclick="confirmSelesai(<?= $row['id']; ?>)">Selesai</button>
+                    </td>
+                </tr>
+                <tr class="tanggapan-form" id="tanggapan-form-<?= $row['id']; ?>">
+                    <td colspan="7">
+                        <h3>Berikan Tanggapan</h3>
+                        <form action="simpan_tanggapan.php" method="POST">
+                            <input type="hidden" name="pengaduan_id" value="<?= $row['id']; ?>">
+                            <textarea name="tanggapan" rows="4" required placeholder="Tulis tanggapan di sini..."></textarea>
+                            <button type="submit">Kirim Tanggapan</button>
+                        </form>
                     </td>
                 </tr>
             <?php endforeach; ?>
@@ -140,12 +157,60 @@ try {
     </div>
 
     <script>
+        let diterimaIds = new Set(); // Set untuk menyimpan ID yang diterima
+        let prosesIds = new Set(); // Set untuk menyimpan ID yang diproses
+
+        function confirmDiterima(id) {
+            if (confirm("Apakah Anda yakin ingin menerima pengaduan ini?")) {
+                diterimaIds.add(id);
+                window.location.href = "proses_pengaduan.php?id=" + id;
+            }
+        }
+
+        function confirmProses(id) {
+            if (diterimaIds.has(id)) {
+                if (confirm("Apakah Anda yakin ingin memproses pengaduan ini?")) {
+                    prosesIds.add(id);
+                    window.location.href = "proses.php?id=" + id;
+                }
+            } else {
+                alert("Anda harus menerima pengaduan ini terlebih dahulu sebelum memprosesnya.");
+            }
+        }
+
+        function confirmTolak(id) {
+            if (diterimaIds.has(id)) {
+                if (confirm("Apakah Anda yakin ingin menolak pengaduan ini?")) {
+                    window.location.href = "konfirmasi_reject.php?id=" + id;
+                }
+            } else {
+                alert("Anda harus menerima pengaduan ini terlebih dahulu sebelum menolaknya.");
+            }
+        }
+
+        function confirmSelesai(id) {
+            if (prosesIds.has(id)) {
+                if (confirm("Apakah Anda yakin ingin menyelesaikan pengaduan ini?")) {
+                    window.location.href = "proses_selesai.php?id=" + id;
+                }
+            } else {
+                alert("Anda harus memproses pengaduan ini terlebih dahulu sebelum menyelesaikannya.");
+            }
+        }
+
         function proses(id) {
-            window.location.href = "proses_pengaduan.php?id=" + id;
+            const form = document.getElementById('tanggapan-form-' + id);
+            if (form.style.display === "none" || form.style.display === "") {
+                form.style.display = " table-row"; // Tampilkan form tanggapan
+            } else {
+                form.style.display = "none"; // Sembunyikan form tanggapan jika sudah terbuka
+            }
         }
 
         function tolak(id) {
-            window.location.href = "konfirmasi_reject.php?id=" + id;
+            if (confirm("Apakah Anda yakin ingin menolak pengaduan ini?")) {
+                window.location.href = "konfirmasi_reject.php?id=" + id;
+            }
         }
 
         function selesai(id) {
